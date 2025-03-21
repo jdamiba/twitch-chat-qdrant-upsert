@@ -1,0 +1,23 @@
+{
+  "name": "twich-chat-listener",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
+    "pg": "^8.13.0",
+    "redis": "^4.7.0",
+    "tmi.js": "^1.8.5",
+    "@qdrant/js-client-rest": "^1.7.0",
+    "openai": "^4.28.0",
+    "uuid": "^9.0.1"
+  }
+}
