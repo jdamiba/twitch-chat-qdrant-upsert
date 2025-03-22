@@ -12,8 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "node-cron": "^3.0.3",
-    "pg": "^8.13.0",
     "redis": "^4.7.0",
     "tmi.js": "^1.8.5",
     "@qdrant/js-client-rest": "^1.7.0",

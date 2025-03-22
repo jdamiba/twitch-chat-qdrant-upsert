@@ -21,38 +21,40 @@ const redisClient = Redis.createClient({
   url: "redis://localhost:6379", // Default local Redis server URL
 });
 
-// Connect to Redis
-async function main() {
-  await redisClient.connect();
-
-  // Delete existing collection if it exists
-  try {
-    await qdrantClient.deleteCollection("kai_cenat_twitch_messages");
-    console.log("Deleted existing collection");
-  } catch (error) {
-    console.log("Collection might not exist yet:", error.message);
-  }
-
-  // Create Qdrant collection if it doesn't exist
-  try {
-    await qdrantClient.createCollection("kai_cenat_twitch_messages", {
-      vectors: {
-        size: 1536, // OpenAI text-embedding-3-small dimension size
-        distance: "Cosine",
-      },
-    });
-    console.log("Created new collection with correct vector size");
-  } catch (error) {
-    console.error("Error creating collection:", error.message);
-  }
-}
-
-main().catch(console.error);
-
 // Initialize Twitch client
 const twitchClient = new tmi.Client({
   channels: [process.env.TWITCH_CHANNEL],
 });
+
+// Connect to Redis
+async function main() {
+  await redisClient.connect();
+
+  // Check if collection exists
+  try {
+    const collections = await qdrantClient.getCollections();
+    const collectionExists = collections.collections.some(
+      (collection) => collection.name === "kai_cenat_twitch_messages"
+    );
+
+    if (!collectionExists) {
+      // Create Qdrant collection if it doesn't exist
+      await qdrantClient.createCollection("kai_cenat_twitch_messages", {
+        vectors: {
+          size: 1536, // OpenAI text-embedding-3-small dimension size
+          distance: "Cosine",
+        },
+      });
+      console.log("Created new collection with correct vector size");
+    } else {
+      console.log("Collection already exists, skipping creation");
+    }
+  } catch (error) {
+    console.error("Error checking/creating collection:", error.message);
+  }
+}
+
+main().catch(console.error);
 
 // Connect to Twitch
 twitchClient.connect();
@@ -141,7 +143,7 @@ async function processMessagesAndStore() {
 setInterval(processMessagesAndStore, 5000);
 
 console.log(
-  "Twitch chat logger started with CLIP embeddings and Qdrant storage."
+  "Twitch chat logger started with OpenAI embeddings and Qdrant storage."
 );
 
 // Ensure proper cleanup when the server is shutting down
